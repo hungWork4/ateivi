@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="💖 A special date invitation designed just for you. Fill out this form and let's plan the perfect date together.">
+  <title>💖 Date Invitation — Dành riêng cho em</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💖</text></svg>">
+</head>
+
+<body>
+
+  <!-- ── Animated Background ── -->
+  <div class="bg-animated" aria-hidden="true"></div>
+  <div class="blur-shape blur-shape--1" aria-hidden="true"></div>
+  <div class="blur-shape blur-shape--2" aria-hidden="true"></div>
+  <div class="blur-shape blur-shape--3" aria-hidden="true"></div>
+
+  <!-- ── Particles ── -->
+  <div class="particles-container" id="particles" aria-hidden="true"></div>
+
+  <!-- ── Header ── -->
+  <header class="header" role="banner">
+    <span class="header__logo">Made with ❤️ just for you</span>
+    <div class="header__controls">
+      <button class="header__btn" id="musicToggle" aria-label="Toggle music" title="Music">
+        🎵
+      </button>
+      <button class="header__btn" id="themeToggle" aria-label="Toggle dark mode" title="Dark Mode">
+        🌙
+      </button>
+    </div>
+  </header>
+
+  <!-- ── Progress Bar ── -->
+  <div class="progress-section" id="progressSection" role="progressbar" aria-valuenow="0" aria-valuemin="0"
+    aria-valuemax="11">
+    <span class="progress__label" id="progressLabel">Question 1 / 11</span>
+    <div class="progress__bar-track">
+      <div class="progress__bar-fill" id="progressFill"></div>
+    </div>
+  </div>
+
+  <!-- ── Main Content ── -->
+  <main class="main-content">
+
+    <!-- ── Hero Section ── -->
+    <section class="hero" id="heroSection">
+      <h1 class="hero__title" id="heroTitle">
+        <span id="typingText"></span><span class="typing-cursor"></span>
+      </h1>
+      <img src="meme/f8f81c5dce04756fe52688e758968543.jpg" class="loopy-img loopy-img--hero" alt="Loopy Hero">
+      <p class="hero__subtitle" id="heroSubtitle">
+        Anh muốn chuẩn bị một buổi hẹn thật phù hợp với em.<br>
+        Chỉ cần vài phút điền chiếc form nhỏ này nhé ❤️
+      </p>
+      <button class="hero__cta" id="startBtn">
+        ✨ Bắt đầu
+      </button>
+    </section>
+
+    <!-- ── Form ── -->
+    <div class="form-container" id="formContainer">
+
+      <!-- Step 1: Tên -->
+      <div class="form-step" id="step1" data-step="1">
+        <div class="glass-card">
+          <img src="meme/16a1bfdaee8c365614d5f108e3890c2a.jpg" class="loopy-img" alt="Loopy Name">
+          <h2 class="section-title">💕Anh có thể gọi em làa?</h2>
+          <p class="section-desc">Hì hì tiện xưng hô cho anh biết luôn í màa </p>
+          <div class="form-group">
+            <input type="text" class="form-input" id="inputName" placeholder="VD: Ina(mà gọi vậy thì hơi kì á) 😙"
+              aria-label="Tên của em" autocomplete="given-name">
+            <p class="error-message" id="errorName">Hãy cho anh biết em muốn gọi hay xưng hô ra sao nhaa</p>
+          </div>
+          <div class="nav-buttons">
+            <div></div>
+            <button class="btn btn--primary" data-next="2">Tiếp theo →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: Ngày rảnh -->
+      <div class="form-step" id="step2" data-step="2">
+        <div class="glass-card">
+          <img src="meme/86f4d7bf906b5802ef4b1c27b029b056.jpg" class="loopy-img" alt="Loopy Calendar">
+          <h2 class="section-title">📅 Ngày nào em rảnh?</h2>
+          <p class="section-desc">Chọn các ngày cụ thể trên lịch hoặc thứ trong tuần em rảnh nhé ❤️</p>
+
+          <!-- Date mode toggle -->
+          <div class="option-cards option-cards--2" id="dateModeOptions" style="margin-bottom: var(--space-lg);">
+            <div class="option-card selected" data-value="calendar" tabindex="0" role="button" aria-pressed="true">
+              <span class="option-card__icon">📅</span>
+              <span class="option-card__label">Chọn trên lịch</span>
+            </div>
+            <div class="option-card" data-value="weekdays" tabindex="0" role="button" aria-pressed="false">
+              <span class="option-card__icon">🔁</span>
+              <span class="option-card__label">Thứ trong tuần</span>
+            </div>
+          </div>
+
+          <!-- Calendar Section -->
+          <div id="calendarSection">
+            <div class="calendar-container">
+              <div class="calendar-header">
+                <button type="button" id="prevMonthBtn" class="calendar-nav-btn">&lt;</button>
+                <span id="calendarMonthYear" class="calendar-month-title"></span>
+                <button type="button" id="nextMonthBtn" class="calendar-nav-btn">&gt;</button>
+              </div>
+              <div class="calendar-grid">
+                <div class="calendar-weekday">T2</div>
+                <div class="calendar-weekday">T3</div>
+                <div class="calendar-weekday">T4</div>
+                <div class="calendar-weekday">T5</div>
+                <div class="calendar-weekday">T6</div>
+                <div class="calendar-weekday">T7</div>
+                <div class="calendar-weekday">CN</div>
+                <div class="calendar-days" id="calendarDays"></div>
+              </div>
+            </div>
+            <div class="selected-dates-preview" id="selectedDatesPreview">
+              Chưa chọn ngày nào
+            </div>
+          </div>
+
+          <!-- Weekdays Section -->
+          <div id="weekdaysSection" style="display: none;">
+            <p class="section-desc" style="margin-bottom: var(--space-md);">Chọn một hoặc nhiều thứ em rảnh:</p>
+            <div class="chips-container" id="weekdayChips" style="justify-content: center;">
+              <div class="chip" data-value="Mon" tabindex="0" role="button" aria-pressed="false">Thứ 2</div>
+              <div class="chip" data-value="Tue" tabindex="0" role="button" aria-pressed="false">Thứ 3</div>
+              <div class="chip" data-value="Wed" tabindex="0" role="button" aria-pressed="false">Thứ 4</div>
+              <div class="chip" data-value="Thu" tabindex="0" role="button" aria-pressed="false">Thứ 5</div>
+              <div class="chip" data-value="Fri" tabindex="0" role="button" aria-pressed="false">Thứ 6</div>
+              <div class="chip" data-value="Sat" tabindex="0" role="button" aria-pressed="false">Thứ 7</div>
+              <div class="chip" data-value="Sun" tabindex="0" role="button" aria-pressed="false">Chủ Nhật</div>
+            </div>
+          </div>
+
+          <p class="error-message" id="errorDate">Hãy chọn ít nhất một ngày hoặc thứ nhé ❤️</p>
+
+          <div class="nav-buttons">
+            <button class="btn btn--secondary" data-prev="1">← Quay lại</button>
+            <button class="btn btn--primary" data-next="3">Tiếp theo →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Khoảng thời gian -->
+      <div class="form-step" id="step3" data-step="3">
+        <div class="glass-card">
+          <h2 class="section-title">🕐 Khoảng thời gian nào?</h2>
+          <p class="section-desc">Em muốn đi date vào lúc nào? Có thể chọn nhiều buổi nhé!</p>
+          <div class="option-cards" id="timeOptions">
+            <div class="option-card" data-value="morning" tabindex="0" role="button" aria-pressed="false">
+              <span class="option-card__icon">🌅</span>
+              <span class="option-card__label">Buổi sáng</span>
+            </div>
+            <div class="option-card" data-value="afternoon" tabindex="0" role="button" aria-pressed="false">
+              <span class="option-card__icon">☀️</span>
+              <span class="option-card__label">Buổi trưa</span>
+            </div>
+            <div class="option-card" data-value="evening" tabindex="0" role="button" aria-pressed="false">
+              <span class="option-card__icon">🌇</span>
+              <span class="option-card__label">Buổi chiều</span>
+            </div>
+            <div class="option-card" data-value="night" tabindex="0" role="button" aria-pressed="false">
+              <span class="option-card__icon">🌙</span>
+              <span class="option-card__label">Buổi tối</span>
+            </div>
+          </div>
+          <p class="error-message" id="errorTime">Chọn ít nhất một khoảng thời gian nhé ❤️</p>
+          <div class="nav-buttons">
+            <button class="btn btn--secondary" data-prev="2">← Quay lại</button>
+            <button class="btn btn--primary" data-next="4">Tiếp theo →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4: Địa điểm đón -->
+      <div class="form-step" id="step4" data-step="4">
+        <div class="glass-card">
+          <h2 class="section-title">📍 Anh đón em ở đâu?</h2>
+          <p class="section-desc">Nhập địa chỉ hoặc mô tả vị trí nhé</p>
+          <div class="form-group">
+            <input type="text" class="form-input" id="inputPickup" placeholder="Ví dụ: Trước cổng công ty..."
+              aria-label="Địa điểm đón">
+            <p class="error-message" id="errorPickup">Cho anh biết đón em ở đâu nhé ❤️</p>
+          </div>
+          <div class="nav-buttons">
+            <button class="btn btn--secondary" data-prev="3">← Quay lại</button>
+            <button class="btn btn--primary" data-next="5">Tiếp theo →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 5: Date Planner -->
+      <div class="form-step" id="step5" data-step="5">
+        <div class="glass-card">
+          <img src="meme/7fd3187f1e6012fc3bd9d52d91ad47f0.jpg" class="loopy-img" alt="Loopy Places">
+          <h2 class="section-title">📍 Em có gợi ý địa điểm nào không?</h2>
+          <p class="section-desc">Em có thể gợi ý cho anh, hoặc có địa điểm nào em muốn đến không? 💕<br>Chọn nhiều chỗ
+            rồi sắp xếp thứ tự đi nhé!</p>
+
+          <!-- Place Cards -->
+          <div class="place-grid" id="placeGrid">
+            <div class="place-card" data-place="cafe" tabindex="0" role="button" aria-pressed="false">
+              <span class="place-card__emoji">☕</span>
+              <span class="place-card__name">Cafe</span>
+            </div>
+            <div class="place-card" data-place="bakery" tabindex="0" role="button" aria-pressed="false">
+              <span class="place-card__emoji">🍰</span>
+              <span class="place-card__name">Bakery</span>
+            </div>
+            <div class="place-card" data-place="milktea" tabindex="0" role="button" aria-pressed="false">
+              <span class="place-card__emoji">🧋</span>
+              <span class="place-card__name">Milk Tea</span>
+            </div>
+            <div class="place-card" data-place="pizza" tabindex="0" role="button" aria-pressed="false">
+              <span class="place-card__emoji">🍕</span>
+              <span class="place-card__name">Pizza</span>
+            </div>
+            <div class="place-card" data-place="bbq" tabindex="0" role="button" aria-pressed="false">
+              <span class="place-card__emoji">🥩</span>
+              <span class="place-card__name">BBQ</span>
+            </div>
+            <div class="place-card" data-place="cinema" tabindex="0" role="button" aria-pressed="false">
+              <span class="place-card__emoji">🎬</span>
+              <span class="place-card__name">Cinema</span>
+            </div>
+            <div class="place-card" data-place="bowling" tabindex="0" role="button" aria-pressed="false">
+              <span class="place-card__emoji">🎳</span>
+              <span class="place-card__name">Bowling</span>
+            </div>
+            <div class="place-card" data-place="karaoke" tabindex="0" role="button" aria-pressed="false">
+              <span class="place-card__emoji">🎤</span>
+              <span class="place-card__name">Karaoke</span>
+            </div>
+            <div class="place-card" data-place="museum" tabindex="0" role="button" aria-pressed="false">
+              <span class="place-card__emoji">🏛️</span>
+              <span class="place-card__name">Museum</span>
+            </div>
+            <div class="place-card" data-place="aquarium" tabindex="0" role="button" aria-pressed="false">
+              <span class="place-card__emoji">🐟</span>
+              <span class="place-card__name">Aquarium</span>
+            </div>
+            <div class="place-card" data-place="bookstore" tabindex="0" role="button" aria-pressed="false">
+              <span class="place-card__emoji">📚</span>
+              <span class="place-card__name">Bookstore</span>
+            </div>
+            <div class="place-card" data-place="workshop" tabindex="0" role="button" aria-pressed="false">
+              <span class="place-card__emoji">🎨</span>
+              <span class="place-card__name">Workshop</span>
+            </div>
+          </div>
+          <p class="error-message" id="errorPlaces">Chọn ít nhất một địa điểm nhé ❤️</p>
+
+          <!-- Custom Places -->
+          <button class="custom-place-btn" id="addCustomPlace" type="button">
+            ➕ Add My Own Place
+          </button>
+          <div class="custom-places-list" id="customPlacesList"></div>
+
+          <!-- Priority List -->
+          <div class="priority-section" id="prioritySection">
+            <h3 class="priority-title">❤️ Thứ tự đi</h3>
+            <p class="section-desc" style="margin-bottom: var(--space-md);">Kéo thả để sắp xếp thứ tự chúng mình sẽ đi
+              nhé</p>
+            <ul class="priority-list" id="priorityList"></ul>
+          </div>
+
+          <!-- Surprise Message -->
+          <div class="surprise-msg" id="surpriseMsg">
+            <p class="surprise-msg__text">I trust you ❤️</p>
+          </div>
+
+          <div class="nav-buttons">
+            <button class="btn btn--secondary" data-prev="4">← Quay lại</button>
+            <button class="btn btn--primary" data-next="6">Tiếp theo →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 6: Gu ăn uống -->
+      <div class="form-step" id="step6" data-step="6">
+        <div class="glass-card">
+          <h2 class="section-title">🍽️ Gu ăn uống của em?</h2>
+          <p class="section-desc">Anh có thể biết 1 vài sở thích hay điều về em để hiểu rõ em hơn hông? ❤️<br>Đầu tiên
+            là gu ăn uống nhé (món Hàn, món Nhật, món ngọt, cay...)</p>
+          <div class="form-group">
+            <textarea class="form-textarea" id="inputFood"
+              placeholder="Ví dụ: Thích sushi, đồ Hàn, thích ăn đồ ngọt, không ăn hành..."
+              aria-label="Gu ăn uống"></textarea>
+          </div>
+          <div class="nav-buttons">
+            <button class="btn btn--secondary" data-prev="5">← Quay lại</button>
+            <button class="btn btn--primary" data-next="7">Tiếp theo →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 7: Âm nhạc -->
+      <div class="form-step" id="step7" data-step="7">
+        <div class="glass-card">
+          <h2 class="section-title">🎵 Sở thích âm nhạc?</h2>
+          <p class="section-desc">Gu âm nhạc của em là gì? (những thể loại nhạc em hay nghe)</p>
+          <div class="chips-container" id="playlistChips">
+            <div class="chip" data-value="taylor" tabindex="0" role="button" aria-pressed="false">🎤 Taylor Swift</div>
+            <div class="chip" data-value="iu" tabindex="0" role="button" aria-pressed="false">🌸 IU</div>
+            <div class="chip" data-value="lofi" tabindex="0" role="button" aria-pressed="false">🎧 Lofi</div>
+            <div class="chip" data-value="usuk" tabindex="0" role="button" aria-pressed="false">🇺🇸 US-UK</div>
+            <div class="chip" data-value="kpop" tabindex="0" role="button" aria-pressed="false">💜 Kpop</div>
+          </div>
+          <div class="form-group" style="margin-top: var(--space-lg);">
+            <input type="text" class="form-input" id="inputPlaylistOther"
+              placeholder="Hoặc nhập thể loại khác, bài hát cụ thể..." aria-label="Playlist khác">
+          </div>
+          <div class="nav-buttons">
+            <button class="btn btn--secondary" data-prev="6">← Quay lại</button>
+            <button class="btn btn--primary" data-next="8">Tiếp theo →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 8: Sở thích khi rảnh -->
+      <div class="form-step" id="step8" data-step="8">
+        <div class="glass-card">
+          <h2 class="section-title">🎨 Sở thích lúc rảnh rỗi?</h2>
+          <p class="section-desc">Em thường thích làm gì khi có thời gian rảnh rỗi?</p>
+          <div class="form-group">
+            <textarea class="form-textarea" id="inputHobbies"
+              placeholder="Ví dụ: Đọc sách, xem phim, đi dạo, chơi game, chụp ảnh..."
+              aria-label="Sở thích khi rảnh"></textarea>
+          </div>
+          <div class="nav-buttons">
+            <button class="btn btn--secondary" data-prev="7">← Quay lại</button>
+            <button class="btn btn--primary" data-next="9">Tiếp theo →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 9: Không gian buổi date -->
+      <div class="form-step" id="step9" data-step="9">
+        <div class="glass-card">
+          <h2 class="section-title">🌌 Không gian date lý tưởng?</h2>
+          <p class="section-desc">Em thích không gian buổi date kiểu nào nhất? Chọn các vibe em thích nhé!</p>
+          <div class="chips-container" id="vibeChips" style="justify-content: center; margin-bottom: var(--space-lg);">
+            <div class="chip" data-value="romantic" tabindex="0" role="button" aria-pressed="false">💖 Lãng mạn</div>
+            <div class="chip" data-value="cozy" tabindex="0" role="button" aria-pressed="false">🕯️ Ấm cúng, yên tĩnh
+            </div>
+            <div class="chip" data-value="active" tabindex="0" role="button" aria-pressed="false">🎮 Sôi động, náo nhiệt
+            </div>
+            <div class="chip" data-value="nature" tabindex="0" role="button" aria-pressed="false">🌳 Gần gũi thiên nhiên
+            </div>
+            <div class="chip" data-value="surprise" tabindex="0" role="button" aria-pressed="false">🎁 Bất ngờ</div>
+          </div>
+          <div class="nav-buttons">
+            <button class="btn btn--secondary" data-prev="8">← Quay lại</button>
+            <button class="btn btn--primary" data-next="10">Tiếp theo →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 10: Things NOT To Do -->
+      <div class="form-step" id="step10" data-step="10">
+        <div class="glass-card">
+          <h2 class="section-title">🚫 Điều anh KHÔNG NÊN làm?</h2>
+          <p class="section-desc">Cho anh biết những điều cần tránh nhé</p>
+          <div class="form-group">
+            <textarea class="form-textarea" id="inputNotDo" placeholder="Ví dụ: Không đến trễ, không quên nước hoa..."
+              aria-label="Điều không nên làm"></textarea>
+          </div>
+          <div class="nav-buttons">
+            <button class="btn btn--secondary" data-prev="9">← Quay lại</button>
+            <button class="btn btn--primary" data-next="11">Tiếp theo →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 11: Message -->
+      <div class="form-step" id="step11" data-step="11">
+        <div class="glass-card">
+          <img src="meme/bc067ef3bc4a16adfa5b053ac76488d9.jpg" class="loopy-img" alt="Loopy Message">
+          <h2 class="section-title">💌 Nhắn gì cho anh không?</h2>
+          <p class="section-desc">Viết gì đó cho anh nhé, gì cũng được ❤️</p>
+          <div class="form-group">
+            <textarea class="form-textarea form-textarea--lg" id="inputMessage" placeholder="Anh ơi..."
+              aria-label="Lời nhắn cho anh"></textarea>
+          </div>
+
+          <!-- Confirmation -->
+          <div class="confirm-checkbox" id="confirmCheckbox" tabindex="0" role="checkbox" aria-checked="false">
+            <div class="confirm-checkbox__box" id="confirmBox"></div>
+            <span class="confirm-checkbox__text">I agree to spend this date together ❤️</span>
+          </div>
+          <p class="error-message" id="errorConfirm">Đồng ý đi date với anh nhé ❤️</p>
+
+          <!-- Submit -->
+          <div class="nav-buttons" style="flex-direction: column; gap: var(--space-md);">
+            <button class="btn btn--submit glow" id="submitBtn" type="button">💖 Send to Him</button>
+            <p class="error-message" id="errorSubmit" style="text-align: center; margin: var(--space-xs) 0 0 0;">Gửi thông tin thất bại. Vui lòng kiểm tra lại kết nối mạng hoặc thử lại nhé ❤️</p>
+            <button class="btn btn--secondary" data-prev="10" style="align-self: flex-start;">← Quay lại</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /form-container -->
+
+    <!-- ── Summary Screen ── -->
+    <div class="summary-screen" id="summaryScreen"></div>
+
+  </main>
+
+  <!-- ── Success Screen ── -->
+  <div class="success-screen" id="successScreen" role="dialog" aria-label="Success">
+    <div class="success-screen__icon" style="margin-bottom: var(--space-md);">
+      <img src="meme/e504438185c0e5ad558b2429da12e0fc.jpg" class="loopy-img"
+        style="max-width: 140px; border-radius: 50%; margin: 0 auto;" alt="Loopy Success">
+    </div>
+    <h2 class="success-screen__title">Cảm ơn em đã điền form! 💖</h2>
+    <p class="success-screen__subtitle">Anh đã nhận được rồi. Anh sẽ xác nhận ngày hẹn với em sớm nhé ❤️<br>Chờ anh một
+      chút nha!</p>
+    <div class="success-screen__buttons">
+      <button class="btn btn--primary" id="viewAnswersBtn">📋 View Answers</button>
+      <button class="btn btn--secondary" id="editAgainBtn">✏️ Edit Again</button>
+      <button class="btn btn--secondary" id="exportBtn">📥 Export JSON</button>
+    </div>
+  </div>
+
+  <!-- ── Bear ── -->
+  <div class="bear-container" id="bearContainer" aria-label="Loopy mascot" title="Hi! 🌸">
+    <img src="meme/bc067ef3bc4a16adfa5b053ac76488d9.jpg" class="loopy-img--mascot" alt="Loopy Mascot">
+  </div>
+
+  <!-- ── Audio (placeholder) ── -->
+  <audio id="bgMusic" loop preload="none">
+    <!-- Add your own mp3: <source src="assets/music/bg.mp3" type="audio/mpeg"> -->
+  </audio>
+
+  <!-- ── External Libraries ── -->
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+  <!-- ── Main Script ── -->
+  <script src="script.js"></script>
+</body>
+
+</html>
