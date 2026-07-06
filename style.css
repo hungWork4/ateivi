@@ -943,6 +943,7 @@ body {
 .priority-item {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: var(--space-md);
   padding: var(--space-md) var(--space-lg);
   background: var(--bg-card);
@@ -999,8 +1000,15 @@ body {
 .preference-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-sm);
-  margin-top: var(--space-sm);
+  gap: var(--space-xs);
+  width: 100%;
+  margin-top: var(--space-xs);
+}
+
+@media (min-width: 769px) {
+  .preference-tags {
+    padding-left: 65px;
+  }
 }
 
 .preference-tag {
@@ -1664,8 +1672,17 @@ body {
 }
 
 @media (max-width: 480px) {
+  .main-content {
+    padding: var(--space-md) var(--space-xs);
+  }
+
+  .glass-card {
+    padding: var(--space-lg) var(--space-md);
+  }
+
   .place-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-xs);
   }
 
   .hero__cta {
@@ -1690,6 +1707,18 @@ body {
   .success-screen__buttons .btn {
     width: 100%;
     justify-content: center;
+  }
+
+  .bear-container {
+    width: 50px;
+    height: 50px;
+    bottom: 10px;
+    right: 10px;
+  }
+
+  .loopy-img--mascot {
+    width: 50px;
+    height: 50px;
   }
 }
 
@@ -1718,6 +1747,7 @@ body {
   padding: var(--space-md);
   margin-bottom: var(--space-md);
   box-shadow: var(--shadow-card);
+  width: 100%;
   max-width: 380px;
   margin-left: auto;
   margin-right: auto;

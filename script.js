@@ -135,6 +135,9 @@
 
   // ── Initialize ──
   function init() {
+    // Reset form data on page load/entry
+    localStorage.removeItem(STORAGE_KEY);
+
     // Clear old localStorage structure if it has old date format to avoid crashes
     checkAndCleanLocalStorage();
     restoreFromStorage();
