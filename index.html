@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" data-theme="dark">
 
 <head>
   <meta charset="UTF-8">
@@ -28,7 +28,7 @@
     <span class="header__logo">Made with ❤️ just for you</span>
     <div class="header__controls">
       <button class="header__btn" id="musicToggle" aria-label="Toggle music" title="Music">
-        🎵
+        🔊
       </button>
       <button class="header__btn" id="themeToggle" aria-label="Toggle dark mode" title="Dark Mode">
         🌙
@@ -58,9 +58,15 @@
         Anh muốn chuẩn bị một buổi hẹn thật phù hợp với em.<br>
         Chỉ cần vài phút điền chiếc form nhỏ này nhé ❤️
       </p>
-      <button class="hero__cta" id="startBtn">
-        ✨ Bắt đầu
-      </button>
+      <div class="hero__buttons"
+        style="display: flex; gap: var(--space-md); flex-wrap: wrap; justify-content: center; width: 100%;">
+        <button class="hero__cta" id="startBtn">
+          ✨ Bắt đầu
+        </button>
+        <button class="hero__cta hero__cta--secondary" id="qaBtn" type="button">
+          💬 Hỏi đáp với anh
+        </button>
+      </div>
     </section>
 
     <!-- ── Form ── -->
@@ -371,7 +377,7 @@
           <h2 class="section-title">🚫 Điều anh KHÔNG NÊN làm?</h2>
           <p class="section-desc">Cho anh biết những điều cần tránh nhé</p>
           <div class="form-group">
-            <textarea class="form-textarea" id="inputNotDo" placeholder="Ví dụ: Không đến trễ, không quên nước hoa..."
+            <textarea class="form-textarea" id="inputNotDo" placeholder="cho anh biết vớiii"
               aria-label="Điều không nên làm"></textarea>
           </div>
           <div class="nav-buttons">
@@ -402,7 +408,8 @@
           <!-- Submit -->
           <div class="nav-buttons" style="flex-direction: column; gap: var(--space-md);">
             <button class="btn btn--submit glow" id="submitBtn" type="button">💖 Send to Him</button>
-            <p class="error-message" id="errorSubmit" style="text-align: center; margin: var(--space-xs) 0 0 0;">Gửi thông tin thất bại. Vui lòng kiểm tra lại kết nối mạng hoặc thử lại nhé ❤️</p>
+            <p class="error-message" id="errorSubmit" style="text-align: center; margin: var(--space-xs) 0 0 0;">Gửi
+              thông tin thất bại. Vui lòng kiểm tra lại kết nối mạng hoặc thử lại nhé ❤️</p>
             <button class="btn btn--secondary" data-prev="10" style="align-self: flex-start;">← Quay lại</button>
           </div>
         </div>
@@ -413,21 +420,99 @@
     <!-- ── Summary Screen ── -->
     <div class="summary-screen" id="summaryScreen"></div>
 
+    <!-- ── Standalone Q&A Screen ── -->
+    <div class="qa-screen" id="qaScreen" style="display: none;">
+      <div class="glass-card" style="max-width: 500px; margin: 0 auto; text-align: left;">
+        <img src="meme/bc067ef3bc4a16adfa5b053ac76488d9.jpg" class="loopy-img" alt="Loopy Q&A">
+        <h2 class="section-title" style="text-align: center;">💬 Hỏi đáp với anh</h2>
+        <p class="section-desc" style="margin-bottom: var(--space-lg); text-align: center;">Em có thể hỏi anh bất cứ thứ
+          gì em muốn về bản thân anh, cuộc sống của anh, hay 1 điều em muốn anh làm (anh cực kì sẵn lòng nhaa) ❤️</p>
+
+
+
+        <div class="form-group">
+          <label class="form-label" for="qaInputQuestions">Câu hỏi hoặc điều em muốn anh làm</label>
+          <textarea class="form-textarea form-textarea--lg" id="qaInputQuestions"
+            placeholder="Ví dụ: Anh thích điều gì ở em nhất? Một điều anh chưa kể cho ai nghe..."
+            aria-label="Câu hỏi cho anh"></textarea>
+          <p class="error-message" id="errorQaQuestion">Hãy nhập câu hỏi cho anh nhé ❤️</p>
+        </div>
+
+        <p class="error-message" id="errorQaSubmit">Gửi câu hỏi thất bại. Vui lòng kiểm tra lại kết nối mạng hoặc thử
+          lại nhé ❤️</p>
+        <p id="qaSuccessFeedback"
+          style="display: none; font-size: 0.95rem; color: #2ecc71; margin-top: var(--space-md); text-align: center; font-weight: 600;">
+          Anh đã nhận được câu hỏi rồi nhé! Chờ câu trả lời của anh nha 😉</p>
+
+        <div class="nav-buttons"
+          style="margin-top: var(--space-xl); display: flex; gap: var(--space-md); flex-wrap: wrap; align-items: center; width: 100%;">
+          <button class="btn btn--secondary" id="backToHomeBtn" type="button"
+            style="width: auto; min-width: 85px; flex-shrink: 0;">← Quay lại</button>
+          <button class="btn btn--secondary" id="viewQaHistoryBtn" type="button"
+            style="flex: 1; min-width: 140px; font-size: 0.8rem; padding: 10px 8px; white-space: nowrap; text-align: center; justify-content: center;">📋
+            Câu hỏi của chúng mình</button>
+          <button class="btn btn--submit glow" id="sendQaBtn" type="button"
+            style="flex: 1; min-width: 140px; font-size: 0.8rem; padding: 10px 8px; white-space: nowrap; text-align: center; justify-content: center;">💖
+            Gửi cho anh</button>
+        </div>
+      </div>
+
+      <!-- Q&A History Table (Toggleable) -->
+      <div class="qa-history-container glass-card" id="qaHistoryContainer"
+        style="display: none; max-width: 600px; margin: var(--space-lg) auto 0 auto; text-align: left; padding: var(--space-lg);">
+        <h3
+          style="font-family: var(--font-heading); color: var(--text-accent); font-size: 1.25rem; margin-bottom: var(--space-md); text-align: center;">
+          📋 Những câu hỏi của chúng mình</h3>
+
+        <div class="table-responsive"
+          style="overflow-x: auto; border: 1.5px solid var(--border-color); border-radius: var(--radius-md); background: rgba(0,0,0,0.15);">
+          <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; color: var(--text-primary);">
+            <thead>
+              <tr
+                style="border-bottom: 2px solid var(--border-color); background: rgba(255,77,148,0.1); font-weight: 600;">
+                <th
+                  style="padding: 10px; text-align: center; width: 50px; border-right: 1px solid var(--border-color);">
+                  STT</th>
+                <th style="padding: 10px; text-align: left; width: 120px; border-right: 1px solid var(--border-color);">
+                  Người hỏi</th>
+                <th style="padding: 10px; text-align: left; border-right: 1px solid var(--border-color);">Câu hỏi</th>
+                <th style="padding: 10px; text-align: left;">Câu trả lời của anh</th>
+              </tr>
+            </thead>
+            <tbody id="qaHistoryBody">
+              <tr>
+                <td colspan="4" style="padding: var(--space-md); text-align: center; color: var(--text-muted);">Đang tải
+                  câu hỏi... ⏳</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="margin-top: var(--space-md); text-align: center;">
+          <button class="btn btn--secondary" id="closeQaHistoryBtn" type="button"
+            style="padding: 6px 16px; font-size: 0.85rem;">Đóng danh sách</button>
+        </div>
+      </div>
+    </div>
+
   </main>
 
   <!-- ── Success Screen ── -->
   <div class="success-screen" id="successScreen" role="dialog" aria-label="Success">
-    <div class="success-screen__icon" style="margin-bottom: var(--space-md);">
-      <img src="meme/e504438185c0e5ad558b2429da12e0fc.jpg" class="loopy-img"
-        style="max-width: 140px; border-radius: 50%; margin: 0 auto;" alt="Loopy Success">
-    </div>
-    <h2 class="success-screen__title">Cảm ơn em đã điền form! 💖</h2>
-    <p class="success-screen__subtitle">Anh đã nhận được rồi. Anh sẽ xác nhận ngày hẹn với em sớm nhé ❤️<br>Chờ anh một
-      chút nha!</p>
-    <div class="success-screen__buttons">
-      <button class="btn btn--primary" id="viewAnswersBtn">📋 View Answers</button>
-      <button class="btn btn--secondary" id="editAgainBtn">✏️ Edit Again</button>
-      <button class="btn btn--secondary" id="exportBtn">📥 Export JSON</button>
+    <div class="success-screen__content">
+      <div class="success-screen__icon" style="margin-bottom: var(--space-md);">
+        <img src="meme/e504438185c0e5ad558b2429da12e0fc.jpg" class="loopy-img"
+          style="max-width: 140px; border-radius: 50%; margin: 0 auto;" alt="Loopy Success">
+      </div>
+      <h2 class="success-screen__title">Cảm ơn em đã điền form! 💖</h2>
+      <p class="success-screen__subtitle">Anh đã nhận được rồi. Anh sẽ xác nhận ngày hẹn với em sớm nhé ❤️<br>Chờ anh
+        một chút nha!</p>
+
+      <div class="success-screen__buttons" style="margin-top: var(--space-lg);">
+        <button class="btn btn--primary" id="viewAnswersBtn">📋 View Answers</button>
+        <button class="btn btn--secondary" id="editAgainBtn">✏️ Edit Again</button>
+        <button class="btn btn--secondary" id="successBackToHomeBtn">🏠 Quay lại trang chủ</button>
+      </div>
     </div>
   </div>
 
@@ -436,9 +521,15 @@
     <img src="meme/bc067ef3bc4a16adfa5b053ac76488d9.jpg" class="loopy-img--mascot" alt="Loopy Mascot">
   </div>
 
-  <!-- ── Audio (placeholder) ── -->
-  <audio id="bgMusic" loop preload="none">
-    <!-- Add your own mp3: <source src="assets/music/bg.mp3" type="audio/mpeg"> -->
+  <!-- ── Audio Player Elements ── -->
+  <audio id="musicHome" loop preload="auto">
+    <source src="music/bai1.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="musicQa" loop preload="auto">
+    <source src="music/bai2.mp3" type="audio/mpeg">
+  </audio>
+  <audio id="musicForm" loop preload="auto">
+    <source src="music/bai3.mp3" type="audio/mpeg">
   </audio>
 
   <!-- ── External Libraries ── -->

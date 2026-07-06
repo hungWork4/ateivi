@@ -10,7 +10,7 @@
   const STORAGE_KEY = 'dateInvitation_data';
   const TYPING_SPEED = 60;
   const TYPING_TEXT = '💌 Em có muốn dành một buổi hẹn thật đặc biệt cùng anh không?';
-  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzTW2_wJSz2ARVAwPl51wYp-mMYx8FYCMENYI2IIKaqWpV7_iiKOT33SXjJ9ZlFu3qJ/exec'; // Paste your Google Apps Script URL here after deploying
+  const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwTCYq6635bvVglTqe64zlVtDukfLyM5wduyl1_0PmcaqALJ-bK9-W0kBPn1hTozE-b/exec'; // Paste your Google Apps Script URL here after deploying
 
   const PLACE_DATA = {
     cafe: { emoji: '☕', name: 'Cafe' },
@@ -68,11 +68,13 @@
       hobbies: '',
       vibes: [],
       notToDo: '',
+      questions: '',
       message: '',
       confirmed: false,
     },
-    isDarkMode: false,
-    isMusicPlaying: false,
+    isDarkMode: true,
+    isMusicPlaying: true,
+    activeAudio: null,
     sortableInstance: null,
     customPlaceCounter: 0,
     currentMonth: new Date().getMonth(),
@@ -94,7 +96,9 @@
     progressFill: $('#progressFill'),
     themeToggle: $('#themeToggle'),
     musicToggle: $('#musicToggle'),
-    bgMusic: $('#bgMusic'),
+    musicHome: $('#musicHome'),
+    musicQa: $('#musicQa'),
+    musicForm: $('#musicForm'),
     particles: $('#particles'),
     // Step 3
     timeOptions: $('#timeOptions'),
@@ -124,12 +128,24 @@
     confirmBox: $('#confirmBox'),
     submitBtn: $('#submitBtn'),
     errorSubmit: $('#errorSubmit'),
-    // Screens
+    // Screens & Q&A
+    qaBtn: $('#qaBtn'),
+    qaScreen: $('#qaScreen'),
+    qaInputQuestions: $('#qaInputQuestions'),
+    errorQaQuestion: $('#errorQaQuestion'),
+    errorQaSubmit: $('#errorQaSubmit'),
+    qaSuccessFeedback: $('#qaSuccessFeedback'),
+    sendQaBtn: $('#sendQaBtn'),
+    backToHomeBtn: $('#backToHomeBtn'),
+    viewQaHistoryBtn: $('#viewQaHistoryBtn'),
+    qaHistoryContainer: $('#qaHistoryContainer'),
+    qaHistoryBody: $('#qaHistoryBody'),
+    closeQaHistoryBtn: $('#closeQaHistoryBtn'),
     successScreen: $('#successScreen'),
     summaryScreen: $('#summaryScreen'),
     viewAnswersBtn: $('#viewAnswersBtn'),
     editAgainBtn: $('#editAgainBtn'),
-    exportBtn: $('#exportBtn'),
+    successBackToHomeBtn: $('#successBackToHomeBtn'),
     bearContainer: $('#bearContainer'),
   };
 
@@ -141,6 +157,25 @@
     // Clear old localStorage structure if it has old date format to avoid crashes
     checkAndCleanLocalStorage();
     restoreFromStorage();
+    state.activeAudio = dom.musicHome;
+
+    // Play default song on load (with fallback for browser autoplay blocks)
+    if (state.activeAudio) {
+      state.activeAudio.volume = 1;
+      state.activeAudio.play().catch(() => {
+        // Autoplay blocked by browser. Play on first user interaction gesture
+        const startAutoplay = () => {
+          if (state.isMusicPlaying && state.activeAudio && state.activeAudio.paused) {
+            state.activeAudio.play().catch(() => {});
+          }
+          document.removeEventListener('click', startAutoplay);
+          document.removeEventListener('keydown', startAutoplay);
+        };
+        document.addEventListener('click', startAutoplay);
+        document.addEventListener('keydown', startAutoplay);
+      });
+    }
+
     initTheme();
     initParticles();
     initTypingAnimation();
@@ -152,7 +187,12 @@
   // ── Theme ──
   function initTheme() {
     const saved = localStorage.getItem('dateInvitation_theme');
-    if (saved === 'dark') {
+    if (saved === 'light') {
+      state.isDarkMode = false;
+      document.documentElement.removeAttribute('data-theme');
+      dom.themeToggle.textContent = '🌙';
+    } else {
+      // Default to dark theme if no preference is saved or if it is dark
       state.isDarkMode = true;
       document.documentElement.setAttribute('data-theme', 'dark');
       dom.themeToggle.textContent = '☀️';
@@ -172,17 +212,105 @@
     }
   }
 
+  // ── Music Helpers (Fade-in/Fade-out) ──
+  function fadeIn(audio, duration = 1000) {
+    if (!audio) return;
+    if (audio.fadeInterval) {
+      clearInterval(audio.fadeInterval);
+    }
+    audio.volume = 0;
+    audio.play().catch(err => {
+      console.warn("Audio playback blocked or interrupted:", err);
+    });
+
+    const steps = 10;
+    const intervalTime = duration / steps;
+    let step = 0;
+
+    audio.fadeInterval = setInterval(() => {
+      step++;
+      audio.volume = step / steps;
+      if (step >= steps) {
+        clearInterval(audio.fadeInterval);
+        audio.fadeInterval = null;
+        audio.volume = 1;
+      }
+    }, intervalTime);
+  }
+
+  function fadeOut(audio, duration = 1000, callback) {
+    if (!audio) {
+      if (callback) callback();
+      return;
+    }
+    if (audio.fadeInterval) {
+      clearInterval(audio.fadeInterval);
+    }
+
+    const steps = 10;
+    const intervalTime = duration / steps;
+    let step = 0;
+    const startVolume = audio.volume;
+
+    audio.fadeInterval = setInterval(() => {
+      step++;
+      audio.volume = Math.max(0, startVolume * (1 - step / steps));
+      if (step >= steps) {
+        clearInterval(audio.fadeInterval);
+        audio.fadeInterval = null;
+        audio.volume = 0;
+        audio.pause();
+        if (callback) callback();
+      }
+    }, intervalTime);
+  }
+
   // ── Music ──
   function toggleMusic() {
+    if (!state.activeAudio) {
+      state.activeAudio = dom.musicHome;
+    }
     if (state.isMusicPlaying) {
-      dom.bgMusic.pause();
+      fadeOut(state.activeAudio, 1000);
       dom.musicToggle.textContent = '🎵';
       state.isMusicPlaying = false;
     } else {
-      dom.bgMusic.play().catch(() => { });
+      fadeIn(state.activeAudio, 1000);
       dom.musicToggle.textContent = '🔊';
       state.isMusicPlaying = true;
     }
+  }
+
+  // ── Switch Tracks with Crossfade ──
+  function switchTrack(targetAudio) {
+    if (!targetAudio) return;
+
+    const activeAudio = state.activeAudio;
+
+    // If target is already active and playing, do nothing
+    if (activeAudio === targetAudio) {
+      if (state.isMusicPlaying && targetAudio.paused) {
+        fadeIn(targetAudio, 1000);
+      }
+      return;
+    }
+
+    // Update active reference
+    state.activeAudio = targetAudio;
+
+    if (!state.isMusicPlaying) {
+      // If user muted, just switch the reference silently
+      if (activeAudio) {
+        activeAudio.pause();
+        activeAudio.volume = 0;
+      }
+      targetAudio.volume = 1;
+      return;
+    }
+
+    // Crossfade using our fade helpers
+    fadeOut(activeAudio, 1000);
+    fadeIn(targetAudio, 1000);
   }
 
   // ── Typing Animation ──
@@ -199,6 +327,7 @@
           dom.heroSubtitle.classList.add('visible');
           setTimeout(() => {
             dom.startBtn.classList.add('visible');
+            if (dom.qaBtn) dom.qaBtn.classList.add('visible');
           }, 300);
         }, 200);
       }
@@ -487,7 +616,14 @@
     // Success screen buttons
     dom.viewAnswersBtn.addEventListener('click', showSummary);
     dom.editAgainBtn.addEventListener('click', editAgain);
-    dom.exportBtn.addEventListener('click', exportJSON);
+    dom.successBackToHomeBtn.addEventListener('click', () => {
+      dom.successScreen.classList.remove('active');
+      dom.heroSection.style.display = 'flex';
+      // Reset form to step 1
+      goToStep(1);
+      switchTrack(dom.musicHome);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
 
     // Form inputs auto-save (debounced)
     const inputs = ['inputName', 'inputPickup', 'inputPlaylistOther', 'inputFood', 'inputHobbies', 'inputNotDo', 'inputMessage'];
@@ -514,6 +650,127 @@
 
     // Custom Places
     dom.addCustomPlace.addEventListener('click', addCustomPlaceEntry);
+
+    // Q&A Button
+    if (dom.qaBtn) {
+      dom.qaBtn.addEventListener('click', (e) => {
+        createRipple(e, dom.qaBtn);
+        dom.heroSection.style.display = 'none';
+        dom.qaScreen.style.display = 'block';
+        switchTrack(dom.musicQa);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        // Reset Q&A screen states
+        dom.qaInputQuestions.value = '';
+        dom.qaInputQuestions.disabled = false;
+        dom.sendQaBtn.style.display = 'block';
+        dom.sendQaBtn.disabled = false;
+        dom.sendQaBtn.textContent = '💖 Gửi cho anh';
+        dom.qaSuccessFeedback.style.display = 'none';
+        dom.errorQaQuestion.classList.remove('visible');
+        dom.errorQaSubmit.classList.remove('visible');
+        dom.qaInputQuestions.classList.remove('error');
+        if (dom.qaHistoryContainer) dom.qaHistoryContainer.style.display = 'none';
+      });
+    }
+
+    // Toggle Q&A History
+    if (dom.viewQaHistoryBtn) {
+      dom.viewQaHistoryBtn.addEventListener('click', () => {
+        if (dom.qaHistoryContainer.style.display === 'none') {
+          dom.qaHistoryContainer.style.display = 'block';
+          loadQaHistory();
+        } else {
+          dom.qaHistoryContainer.style.display = 'none';
+        }
+      });
+    }
+
+    if (dom.closeQaHistoryBtn) {
+      dom.closeQaHistoryBtn.addEventListener('click', () => {
+        dom.qaHistoryContainer.style.display = 'none';
+      });
+    }
+
+    // Back to Home Button from Q&A
+    if (dom.backToHomeBtn) {
+      dom.backToHomeBtn.addEventListener('click', () => {
+        dom.qaScreen.style.display = 'none';
+        dom.heroSection.style.display = 'flex';
+        switchTrack(dom.musicHome);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+
+    // Send Q&A Button
+    if (dom.sendQaBtn) {
+      dom.sendQaBtn.addEventListener('click', () => {
+        const nameText = state.formData.name.trim() || 'Em';
+        const questionText = dom.qaInputQuestions.value.trim();
+
+        let hasError = false;
+        if (!questionText) {
+          dom.errorQaQuestion.classList.add('visible');
+          dom.qaInputQuestions.classList.add('error');
+          hasError = true;
+        } else {
+          dom.errorQaQuestion.classList.remove('visible');
+          dom.qaInputQuestions.classList.remove('error');
+        }
+
+        if (hasError) return;
+
+        dom.errorQaSubmit.classList.remove('visible');
+        dom.sendQaBtn.disabled = true;
+        dom.sendQaBtn.textContent = 'Đang gửi...';
+
+        const payload = {
+          type: 'question',
+          name: nameText,
+          questions: questionText
+        };
+
+        // Also save to state so if they view answers it shows up
+        state.formData.questions = questionText;
+        saveToStorage();
+
+        fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'text/plain'
+          },
+          body: JSON.stringify(payload)
+        })
+          .then(() => {
+            dom.sendQaBtn.style.display = 'none';
+            dom.qaInputQuestions.disabled = true;
+            dom.qaSuccessFeedback.style.display = 'block';
+
+            // Confetti
+            if (typeof confetti === 'function') {
+              confetti({
+                particleCount: 80,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#ff4d94', '#ffb3d1', '#c9b1f0']
+              });
+            }
+          })
+          .catch(err => {
+            console.error('Error sending question:', err);
+            dom.errorQaSubmit.classList.add('visible');
+            dom.sendQaBtn.disabled = false;
+            dom.sendQaBtn.textContent = 'Gửi lại câu hỏi';
+          });
+      });
+
+      // Clear input errors on type
+      dom.qaInputQuestions.addEventListener('input', () => {
+        dom.errorQaQuestion.classList.remove('visible');
+        dom.qaInputQuestions.classList.remove('error');
+      });
+    }
   }
 
   // ── Ripple Effect ──
@@ -535,6 +792,7 @@
     dom.formContainer.classList.add('active');
     dom.progressSection.classList.add('active');
     goToStep(1);
+    switchTrack(dom.musicForm);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -1021,6 +1279,7 @@
       hobbies: d.hobbies || '—',
       vibes: vibeDisplay,
       notToDo: d.notToDo || '—',
+      questions: d.questions || '—',
       message: d.message || '—'
     };
 
@@ -1080,6 +1339,8 @@
     dom.formContainer.classList.remove('active');
     dom.progressSection.classList.remove('active');
     dom.successScreen.classList.add('active');
+
+
 
     // Confetti
     if (typeof confetti === 'function') {
@@ -1192,6 +1453,7 @@
       { label: '🎨 Sở thích lúc rảnh', value: d.hobbies || '—' },
       { label: '🌌 Không gian date', value: vibeDisplay },
       { label: '🚫 Không nên làm', value: d.notToDo || '—' },
+      { label: '💬 Giải đáp thắc mắc về anh', value: d.questions || '—' },
       { label: '💌 Lời nhắn', value: d.message || '—' },
     ];
 
@@ -1206,7 +1468,6 @@
         `).join('')}
         <div class="nav-buttons" style="margin-top: var(--space-xl);">
           <button class="btn btn--secondary" id="backToSuccessBtn">← Quay lại</button>
-          <button class="btn btn--primary" id="exportFromSummaryBtn">📥 Export JSON</button>
         </div>
       </div>
     `;
@@ -1216,7 +1477,6 @@
       dom.summaryScreen.classList.remove('active');
       dom.successScreen.classList.add('active');
     });
-    $('#exportFromSummaryBtn').addEventListener('click', exportJSON);
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -1228,21 +1488,10 @@
     dom.formContainer.classList.add('active');
     dom.progressSection.classList.add('active');
     goToStep(1);
+    switchTrack(dom.musicForm);
   }
 
-  // ── Export JSON ──
-  function exportJSON() {
-    const data = JSON.stringify(state.formData, null, 2);
-    const blob = new Blob([data], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `date-invitation-${state.formData.name || 'data'}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
+
 
   // ── Local Storage ──
   function saveToStorage() {
@@ -1432,6 +1681,56 @@
     const div = document.createElement('div');
     div.textContent = str;
     return div.innerHTML;
+  }
+
+  // ── Q&A History ──
+  function loadQaHistory() {
+    dom.qaHistoryBody.innerHTML = `
+      <tr>
+        <td colspan="4" style="padding: var(--space-md); text-align: center; color: var(--text-muted);">Đang tải câu hỏi... ⏳</td>
+      </tr>
+    `;
+
+    fetch(GOOGLE_SCRIPT_URL)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('HTTP error ' + response.status);
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (!Array.isArray(data) || data.length === 0) {
+          dom.qaHistoryBody.innerHTML = `
+            <tr>
+              <td colspan="4" style="padding: var(--space-md); text-align: center; color: var(--text-muted);">Chưa hỏi anh hãa 😉</td>
+            </tr>
+          `;
+          return;
+        }
+
+        dom.qaHistoryBody.innerHTML = data.map((item, index) => {
+          const answerText = item.answer && item.answer.trim() !== ''
+            ? `<span style="color: #2ecc71; font-weight: 500;">${escapeHtml(item.answer)}</span>`
+            : `<span style="color: var(--text-muted); font-style: italic;">(Chưa trả lời)</span>`;
+
+          return `
+            <tr style="border-bottom: 1px solid var(--border-color);">
+              <td style="padding: 10px; text-align: center; border-right: 1px solid var(--border-color);">${index + 1}</td>
+              <td style="padding: 10px; font-weight: 600; border-right: 1px solid var(--border-color);">${escapeHtml(item.name)}</td>
+              <td style="padding: 10px; border-right: 1px solid var(--border-color);">${escapeHtml(item.question)}</td>
+              <td style="padding: 10px;">${answerText}</td>
+            </tr>
+          `;
+        }).join('');
+      })
+      .catch(err => {
+        console.error('Error loading Q&A history:', err);
+        dom.qaHistoryBody.innerHTML = `
+          <tr>
+            <td colspan="4" style="padding: var(--space-md); text-align: center; color: #e74c3c;">Tải lịch sử câu hỏi thất bại. Vui lòng kiểm tra lại kết nối hoặc thử lại. ❌</td>
+          </tr>
+        `;
+      });
   }
 
   // ── Start ──

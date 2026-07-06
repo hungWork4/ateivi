@@ -1404,17 +1404,25 @@ body {
   background: var(--glass-bg);
   backdrop-filter: blur(30px);
   -webkit-backdrop-filter: blur(30px);
+  overflow-y: auto;
+  padding: var(--space-2xl) var(--space-md);
+}
+
+.success-screen.active {
+  display: block;
+  animation: successFadeIn 0.6s ease-out;
+}
+
+.success-screen__content {
+  display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: var(--space-2xl);
-  gap: var(--space-lg);
-}
-
-.success-screen.active {
-  display: flex;
-  animation: successFadeIn 0.6s ease-out;
+  min-height: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  gap: var(--space-md);
 }
 
 @keyframes successFadeIn {
@@ -1901,3 +1909,46 @@ body {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(0.98); opacity: 0.7; }
 }
+
+/* ── Secondary Hero Button ── */
+.hero__cta--secondary {
+  background: var(--glass-bg) !important;
+  color: var(--text-primary) !important;
+  border: 1.5px solid var(--glass-border) !important;
+  box-shadow: var(--glass-shadow) !important;
+}
+
+.hero__cta--secondary:hover {
+  background: var(--bg-card-hover) !important;
+  border-color: var(--clr-pink-400) !important;
+  transform: translateY(-2px) scale(1.05) !important;
+}
+
+/* Standalone Q&A Screen */
+.qa-screen {
+  animation: stepFadeIn 0.5s ease-out;
+}
+
+/* ── Q&A History Table Styling ── */
+.table-responsive table th,
+.table-responsive table td {
+  padding: var(--space-md);
+  border-bottom: 1px solid var(--border-color);
+  border-right: 1px solid var(--border-color);
+}
+
+.table-responsive table th:last-child,
+.table-responsive table td:last-child {
+  border-right: none;
+}
+
+.table-responsive table th {
+  font-weight: 600;
+  color: var(--text-accent);
+}
+
+.table-responsive table tbody tr:hover {
+  background: rgba(255, 77, 148, 0.05);
+}
+
+
